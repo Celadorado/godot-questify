@@ -8,18 +8,21 @@ class_name QuestResource extends Resource
 
 var name: String:
 	get: return start_node.name
-	
+
 var description: String:
 	get: return start_node.description
-	
+
 var start_node: QuestStart:
 	get:
 		_initialize()
 		return start_node
-		
-var started: bool:
+
+var available: bool:
+	get: return start_node.available
+
+var active: bool:
 	get: return start_node.active
-		
+
 var completed: bool = false
 var is_instance := false
 
@@ -40,7 +43,11 @@ func start() -> void:
 	if not is_instance:
 		printerr("Quest must be instantiated to be started. Use instantiate().")
 		return
-	if not completed and not started:
+	update()
+	if not available:
+		printerr("Quest is not available.")
+		return
+	if not completed and not active:
 		start_node.active = true
 		Questify.quest_started.emit(self)
 		_notify_active_objectives()

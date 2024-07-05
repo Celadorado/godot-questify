@@ -16,13 +16,13 @@ func _ready() -> void:
 	if QuestifySettings.polling_enabled:
 		_add_timer()
 		_quest_update_timer.timeout.connect(update_quests)
-	
-	
+
+
 func start_quest(quest_resource: QuestResource) -> void:
 	_quests.append(quest_resource)
 	quest_resource.start()
 
-	
+
 func update_quests():
 	for quest in _quests:
 		quest.update()
@@ -35,12 +35,19 @@ func clear() -> void:
 func get_quests() -> Array[QuestResource]:
 	return _quests
 
+func get_available_quests() -> Array[QuestResource]:
+	var result: Array[QuestResource] = []
+	result.assign(_quests.filter(
+		func(quest: QuestResource):
+			return quest.available and not quest.active and not quest.completed
+	))
+	return result
 
 func get_active_quests() -> Array[QuestResource]:
 	var result: Array[QuestResource] = []
 	result.assign(_quests.filter(
 		func(quest: QuestResource):
-			return quest.started and not quest.completed
+			return quest.active and not quest.completed
 	))
 	return result
 
